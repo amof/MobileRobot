@@ -21,11 +21,14 @@
    <widget class="QTextEdit" name="bluetooth_in_console">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>20</y>
+      <x>150</x>
+      <y>250</y>
       <width>421</width>
       <height>111</height>
      </rect>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::NoFocus</enum>
     </property>
     <property name="readOnly">
      <bool>true</bool>

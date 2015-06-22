@@ -100,7 +100,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
             bluetooth->write("R");
             break;
         case Qt::Key_A:
-            bluetooth->write("A");
+            bluetooth->write("Hello AVR#");
             break;
         }
 

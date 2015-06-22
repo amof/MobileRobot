@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "MobileRobot_Embedded", "MobileRobot_Embedded\MobileRobot_Embedded.cproj", "{9A48E904-31A7-4D41-82BD-182604B61B03}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "MobileRobot_Embedded", "MobileRobot_Embedded\MobileRobot_Embedded.cproj", "{6F6B21A7-25D6-412A-A58F-DA2E68D38D7F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -9,10 +9,10 @@ Global
 		Release|AVR = Release|AVR
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9A48E904-31A7-4D41-82BD-182604B61B03}.Debug|AVR.ActiveCfg = Debug|AVR
-		{9A48E904-31A7-4D41-82BD-182604B61B03}.Debug|AVR.Build.0 = Debug|AVR
-		{9A48E904-31A7-4D41-82BD-182604B61B03}.Release|AVR.ActiveCfg = Release|AVR
-		{9A48E904-31A7-4D41-82BD-182604B61B03}.Release|AVR.Build.0 = Release|AVR
+		{6F6B21A7-25D6-412A-A58F-DA2E68D38D7F}.Debug|AVR.ActiveCfg = Debug|AVR
+		{6F6B21A7-25D6-412A-A58F-DA2E68D38D7F}.Debug|AVR.Build.0 = Debug|AVR
+		{6F6B21A7-25D6-412A-A58F-DA2E68D38D7F}.Release|AVR.ActiveCfg = Release|AVR
+		{6F6B21A7-25D6-412A-A58F-DA2E68D38D7F}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
