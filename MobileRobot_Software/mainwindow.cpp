@@ -87,22 +87,28 @@ void MainWindow::handleError(QSerialPort::SerialPortError error)
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch( event->key()){
-        case Qt::Key_Up:
-            bluetooth->write("U");
+        case Qt::Key_8:
+            bluetooth->write("U#");
             break;
-        case Qt::Key_Down:
-            bluetooth->write("D");
+        case Qt::Key_2:
+            bluetooth->write("D#");
             break;
-        case Qt::Key_Left:
-            bluetooth->write("L");
+        case Qt::Key_4:
+            bluetooth->write("L#");
             break;
-        case Qt::Key_Right:
-            bluetooth->write("R");
+        case Qt::Key_6:
+            bluetooth->write("R#");
             break;
-        case Qt::Key_A:
-            bluetooth->write("Hello AVR#");
+        case Qt::Key_S:
+            bluetooth->write("S#");
             break;
         }
+
+}
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    if (!(event->isAutoRepeat()))
+    bluetooth->write("S#");
 
 }
 

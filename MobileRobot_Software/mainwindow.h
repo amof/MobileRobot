@@ -30,6 +30,7 @@ private slots:
     void writeData(const QByteArray &data);
     void readData();
     void keyPressEvent(QKeyEvent* event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 
 
