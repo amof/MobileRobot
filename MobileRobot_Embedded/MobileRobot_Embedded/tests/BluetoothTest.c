@@ -6,7 +6,7 @@
  */ 
 
 
-/*#include <avr/io.h>
+#include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/delay.h>
 #include "Uart.h"
@@ -27,4 +27,4 @@ int main(void)
         }
 
     }
-}*/
+}
