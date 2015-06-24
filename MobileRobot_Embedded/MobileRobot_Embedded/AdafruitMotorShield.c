@@ -5,9 +5,12 @@
  *  Author: amof
  */ 
 
+#define F_CPU 1000000UL
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/delay.h>
+#include <util/delay.h>
+#include <stdlib.h>
 #include "AdafruitMotorShield.h"
 #include "I2C_Master.h"
 
@@ -21,7 +24,7 @@
 ****************************************************************************/
 //LOW LEVEL
 uint8_t readConf(uint8_t addr){
-	TWI_Master_getDatasByte(AdafruitMotorShield);
+	TWI_Master_getDatas(AdafruitMotorShield,1);
 	
 	uint8_t oldmode;
 	
@@ -40,13 +43,13 @@ uint8_t readConf(uint8_t addr){
 	return oldmode;
 
 }
-uint8_t writeConf(uint8_t addr, uint8_t d){
+void writeConf(uint8_t addr, uint8_t d){
 	uint8_t msg[2]={addr,d};
-	TWI_Master_sendDatas(AdafruitMotorShield, &msg,2);
+	TWI_Master_sendDatas(AdafruitMotorShield, msg,2);
 }
 void reset(void){
 	uint8_t msg[1]={PCA9685_MODE1};
-	TWI_Master_sendDatas(AdafruitMotorShield, &msg,1);
+	TWI_Master_sendDatas(AdafruitMotorShield, msg,1);
 }
 void setPWM(uint8_t num, uint16_t on, uint16_t off){
 	uint8_t msg[5];
@@ -55,7 +58,7 @@ void setPWM(uint8_t num, uint16_t on, uint16_t off){
 	msg[2]=on>>8;
 	msg[3]=off;
 	msg[4]=off>>8;
-	TWI_Master_sendDatas(AdafruitMotorShield, &msg,5);
+	TWI_Master_sendDatas(AdafruitMotorShield, msg,5);
 
 }
 void setPWMFreq(float freq){
@@ -95,14 +98,17 @@ void AFMS_setPIN(uint8_t pin, uint8_t value){
 
 void AFMS_init( void ){
 	
+	sei();
+	
 	TWI_Master_init(TWI_FREQ_SELECT(10000,1000000UL)); //initialize TWI interface in master mode
-	DDRD=0xff;
-	PORTD=0xff;
+	
 	reset();
 	
 	setPWMFreq(1600);
 	
 	for (uint8_t i=0; i<16; i++) setPWM(i, 0, 0);
+	
+	cli();
 	
 }
 

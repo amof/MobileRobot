@@ -53,7 +53,7 @@ from the slave. Also include how many bytes that should be sent/read including t
 The function will hold execution (loop) until the TWI_ISR has completed with the previous operation,
 then initialize the next operation and return.
 ****************************************************************************/
-void TWI_Master_sendDatas(uint8_t slaveAdress, unsigned char *msg, uint8_t msgSize){
+void TWI_Master_sendDatas(uint8_t slaveAdress, const unsigned char *msg, uint8_t msgSize){
 	//Reset State twi status
 	
 	TWI_statusReg.lastTransOK=FALSE;
@@ -82,18 +82,6 @@ void TWI_Master_getDatas(uint8_t slaveAdress, uint8_t msgSize){
 	while ( TWI_busy() );						// Wait until TWI is ready for next transmission.
 
 	TWI_msgSize = msgSize;						// Number of data to transmit.
-	
-	TWI_buf[0]= (slaveAdress<<TWI_ADR_BITS) | (TRUE<<TWI_READ_BIT); // The first byte must always consit of General Call code or the TWI slave address.
-	
-	TWSTART;
-}
-void TWI_Master_getDatasByte(uint8_t slaveAdress){
-	//Reset State twi status
-	TWI_statusReg.lastTransOK=FALSE;
-	
-	while ( TWI_busy() );						// Wait until TWI is ready for next transmission.
-
-	TWI_msgSize = 1;							// Number of data to transmit.
 	
 	TWI_buf[0]= (slaveAdress<<TWI_ADR_BITS) | (TRUE<<TWI_READ_BIT); // The first byte must always consit of General Call code or the TWI slave address.
 	

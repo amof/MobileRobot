@@ -48,10 +48,10 @@ typedef struct {
 	uint8_t IN2pin;
 }DCMotor;
 
-/*DCMotor M1={8,10,9};
-DCMotor M2={13,11,12};
-DCMotor M3={2,4,3};
-DCMotor M4={7,5,6};*/
+static DCMotor M1={8,10,9};
+static DCMotor M2={13,11,12};
+static DCMotor M3={2,4,3};
+static DCMotor M4={7,5,6};
 
 /****************************************************************************
   Function definitions

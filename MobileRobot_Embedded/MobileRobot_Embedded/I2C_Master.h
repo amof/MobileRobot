@@ -37,7 +37,7 @@ extern void TWI_Master_init(uint8_t twbr);
 			msgSize : size of array of datas
    @return  none
 */
-extern void TWI_Master_sendDatas(uint8_t slaveAdress, unsigned char msg[], uint8_t msgSize);
+extern void TWI_Master_sendDatas(uint8_t slaveAdress, const unsigned char *msg, uint8_t msgSize);
 /**
    @brief   Send a byte via TWI
    @param   slaveAdress : adress of the slave we want to talk to
@@ -48,12 +48,6 @@ extern void TWI_Master_getDatas(uint8_t slaveAdress, uint8_t msgSize);
 /**
    @brief   Request one data byte from slave via TWI
    @param   slaveAdress : adress of the slave we want to talk to
-   @return  none
-*/
-extern void TWI_Master_getDatasByte(uint8_t slaveAdress);
-/**
-   @brief   Transfer the twi_buffer into the buffer we want to use 
-   @param   buf : buffer
    @return  none
 */
 extern void TWI_Master_getBuffer( unsigned char *buf );
