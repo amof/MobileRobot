@@ -18,7 +18,7 @@ After, the robot can be autonomous and transmit informations to the PC if there 
 ## Installation Procedure
 There is not yet a .exe to execute directly to your PC.
 So to have access and launch successfully the software, you must :
-* Download the sofwtares
+* Download the softwares
 * Get the hardware
 * Clone this repository to your desktop
 * Load the .pro file located in /MobileRobot_Software and compile it (no extra libraries needed)
