@@ -3,7 +3,7 @@
 Here is the detail of the framing process used in this application.
 
 Each field is separed by **|** and is decoded using regular expressions.
- | | | | | | ||
+ Field 1 |  Field2 |  Field 3 |  Field 4 |  Field 5 | Field 6  | Field 7  | Field 8 |
 :----: | :----------: | :-----: | :--: | :-: | :----:
 **Header** | **Frame Number** | **Command** |**Number of Data(s) byte(s)**| **Data** | **CRC** | **Footer**
 1 byte | 1 byte       | 1 byte| 1 byte|Up to 80 bytes| 1 byte| 1 byte
@@ -18,7 +18,7 @@ The command are listed below:
  :----: | :----------: | :-----: |
 1 |*0A* | ACK
 #### Data 
-The datas can 
+Datas bytes.
 #### CRC 
 The CRC used is *CRC-8* and is protecting the datas.
 See fellow details [here](https://users.ece.cmu.edu/~koopman/roses/dsn04/koopman04_crc_poly_embedded.pdf).
