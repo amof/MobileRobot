@@ -1,8 +1,8 @@
 #Framing
 
 Here is the detail of the framing process used in this application.
-
 Each field is separed by **|** and is decoded using regular expressions.
+
  Field 1 |  Field2 |  Field 3 |  Field 4 |  Field 5 | Field 6  | Field 7  | Field 8 |
 :----: | :----------: | :-----: | :--: | :-: | :----:
 **Header** | **Frame Number** | **Command** |**Number of Data(s) byte(s)**| **Data** | **CRC** | **Footer**
