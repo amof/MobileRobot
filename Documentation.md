@@ -1,12 +1,13 @@
 #Framing
 
 Here is the detail of the framing process used in this application.
+
 Each field is separed by **|** and is decoded using regular expressions.
 
- Field 1 |  Field2 |  Field 3 |  Field 4 |  Field 5 | Field 6  | Field 7  | Field 8 |
-:----: | :----------: | :-----: | :--: | :-: | :----:
-**Header** | **Frame Number** | **Command** |**Number of Data(s) byte(s)**| **Data** | **CRC** | **Footer**
-1 byte | 1 byte       | 1 byte| 1 byte|Up to 80 bytes| 1 byte| 1 byte
+| |  |  |  |  | | | |
+|:----: | :----------: | :-----: | :--: | :-: | :----:
+|**Header** | **Frame Number** | **Command** |**Number of Data(s) byte(s)**| **Data** | **CRC** | **Footer**
+|1 byte | 1 byte       | 1 byte| 1 byte|Up to 80 bytes| 1 byte| 1 byte
 
 #### Header
 The header is composed by a unique code : **0x10**
@@ -14,9 +15,9 @@ The header is composed by a unique code : **0x10**
 The frame is number with a number between 0-255.
 #### Command 
 The command are listed below: 
- || Hexadecimal| Signification|
- :----: | :----------: | :-----: |
-1 |*0A* | ACK
+| || Hexadecimal| Signification|
+|:----: | :----------: | :-----: |
+|1 |*0A* | ACK
 #### Data 
 Datas bytes.
 #### CRC 
