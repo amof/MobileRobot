@@ -6,7 +6,7 @@ The goal of this project is to develop a remote control car in a first time.
 After, the robot can be autonomous and transmit informations to the PC if there is a bluetooth connection available.
 
 ## Softwares
-- QT 5.4.1 (latest version) + QT Creator 3.4.0
+- QT 5.5 (latest version) + QT Creator
 - Atmel Studio 6.1 SP2 (6.1.2730)
 
 ## Hardware
@@ -18,11 +18,11 @@ After, the robot can be autonomous and transmit informations to the PC if there 
 ## Installation Procedure
 There is not yet a .exe to execute directly to your PC.
 So to have access and launch successfully the software, you must :
-* Download the softwares
-* Get the hardware
-* Clone this repository to your desktop
-* Load the .pro file located in /MobileRobot_Software and compile it (no extra libraries needed)
-* Load the .atsln located in /MobileRobot_Embedded and upload in your µc
+- Download the softwares
+- Get the hardware
+- Clone this repository to your desktop
+- Load the .pro file located in /MobileRobot_Software and compile it (no extra libraries needed)
+- Load the .atsln located in /MobileRobot_Embedded and upload in your µc
 
 ## Development roadmap
 ###V1.0 (31/07/15)
@@ -40,4 +40,5 @@ So to have access and launch successfully the software, you must :
 
 ## Licence
 This project and all its files are published under GPLv3.
+
 This is true even if there is not yet informations in the .cpp or .h files.
