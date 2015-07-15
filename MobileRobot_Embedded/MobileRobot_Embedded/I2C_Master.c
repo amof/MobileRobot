@@ -1,8 +1,14 @@
 /*
- * I2C_Master.c
+ * Handle The I2C communication
+ * DO NOT MODIFY THIS FILE for configuration purpose.
  *
- * Created: 30/01/2015 09:35:15
  *  Author: amof
+ *  Specifically develop for ATMEGA-8bits family
+ *  Based on the work of Atmel
+ *  License: GNU General Public License V3
+ *	Version : 1
+ *	
+ * 
  */ 
 
 #include <avr/io.h>
@@ -10,9 +16,61 @@
 #include <util/twi.h>
 #include "I2C_Master.h"
 
+/****************************************************************************
+  Bit and byte definitions
+****************************************************************************/
+#define TWI_READ_BIT  0       // Bit position for R/W bit in "address byte".
+#define TWI_ADR_BITS  1       // Bit position for LSB of the slave address bits in the init byte.
+
+#define TRUE          1
+#define FALSE         0
+
+/****************************************************************************
+  TWI State codes (TWSR)
+****************************************************************************/
+// General TWI Master status codes                      
+#define TWI_START                  0x08  // START has been transmitted  
+#define TWI_REP_START              0x10  // Repeated START has been transmitted
+#define TWI_ARB_LOST               0x38  // Arbitration lost in SLA+W or data bytes
+										 //						SLA+R or NACK bit
+
+// TWI Master Transmitter status codes                      
+#define TWI_MTX_ADR_ACK            0x18  // SLA+W has been tramsmitted and ACK received
+#define TWI_MTX_ADR_NACK           0x20  // SLA+W has been tramsmitted and NACK received 
+#define TWI_MTX_DATA_ACK           0x28  // Data byte has been tramsmitted and ACK received
+#define TWI_MTX_DATA_NACK          0x30  // Data byte has been tramsmitted and NACK received 
+
+// TWI Master Receiver status codes  
+#define TWI_MRX_ADR_ACK            0x40  // SLA+R has been tramsmitted and ACK received
+#define TWI_MRX_ADR_NACK           0x48  // SLA+R has been tramsmitted and NACK received
+#define TWI_MRX_DATA_ACK           0x50  // Data byte has been received and ACK tramsmitted
+#define TWI_MRX_DATA_NACK          0x58  // Data byte has been received and NACK tramsmitted
+
+// TWI Miscellaneous status codes
+#define TWI_NO_STATE               0xF8  // No relevant state information available; TWINT = “0”
+#define TWI_BUS_ERROR              0x00  // Bus error due to an illegal START or STOP condition
+
+
+// TWI TWCR shortcuts
+#define TWSTART		TWCR =	(1<<TWEN)					|(1<<TWIE)|(1<<TWINT)										|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)		|(0<<TWWC)
+							//TWI Interface enabled		|Enable TWI Interupt and clear the flag to send byte		|Initiate a START condition
+#define TWACK		TWCR =	(1<<TWEN)					|(1<<TWIE)|(1<<TWINT)										|(1<<TWEA)|(0<<TWSTA)|(0<<TWSTO)		|(0<<TWWC)
+							//TWI Interface enabled		|Enable TWI Interupt and clear the flag to send byte		|Send ACK after next reception
+#define TWNACK		TWCR =	(1<<TWEN)					|(1<<TWIE)|(1<<TWINT)										|(0<<TWEA)|(0<<TWSTA)|(0<<TWSTO)		|(0<<TWWC)
+							//TWI Interface enabled		|Enable TWI Interupt and clear the flag to read next byte	|Send NACK after reception
+#define TWSTOP		TWCR =	(1<<TWEN)					|(0<<TWIE)|(1<<TWINT)										|(0<<TWEA)|(0<<TWSTA)|(1<<TWSTO)		|(0<<TWWC)
+							//TWI Interface enabled		|Disable TWI Interrupt and clear the flag					|Initiate a STOP condition
+#define TWRESTART	TWCR =	(1<<TWEN)					|(1<<TWIE)|(1<<TWINT)										|(0<<TWEA)|(1<<TWSTA)|(0<<TWSTO)		|(0<<TWWC)
+							//TWI Interface enabled		|Enable TWI Interupt and clear the flag						|Initiate a (RE)START condition.		
+
+/****************************************************************************
+  Private definitions
+****************************************************************************/							
 static unsigned char TWI_buf[ TWI_BUFFER_SIZE ];    // Transceiver buffer
 static uint8_t TWI_msgSize;							// Number of bytes to be transmitted.
 static unsigned char TWI_state = TWI_NO_STATE;      // State byte. Default set to TWI_NO_STATE.
+							
+// ********** Functions ********** //
 
 // ********** Get infos from twi ********** //
 
@@ -23,9 +81,6 @@ unsigned char TWI_busy( void )
 {
 	return ( TWCR & (1<<TWIE) );                  // IF TWI Interrupt is enabled then the Transceiver is busy
 }
-
-
-// ********** Functions ********** //
 
 /****************************************************************************
 Call this function to set up the TWI master to its initial standby state.
