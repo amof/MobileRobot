@@ -1,13 +1,14 @@
 /*
  * Handle The UART communication
+ * DO NOT MODIFY THIS FILE for configuration purpose.
  *
- * Created: 15/11/2014 17:20:58
  *  Author: amof
- *  Specifically developp for @tmega1284P-PU
- * DO NOT MODIFY THIS FILE ; IF YOU WANT ADAPT THE SIZE OF BUFFER IN UART.H
+ *  Specifically developp for Atmega-8bits family
+ *  Based on the work of Atmel
+ *  License: GNU General Public License V3
+ *	Version : 1.1b1
+ * 
  */ 
-
-/*INCLUDES*/
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -17,50 +18,95 @@
 
 #include "Uart.h"
 
-/*DEFINES*/
-#define USART0_A					UCSR0A
-#define USART0_B					UCSR0B
-#define USART0_C					UCSR0C
-#define USART0_DATA					UDR0
-#define USART0_UDRIE				UDRIE0
-#define U2X							U2X0
+//Structure
+typedef struct {
+	uint8_t tx_ring_head;
+	uint8_t tx_ring_tail;
+	char	tx_ring_data[UART_RING_SIZE_TX];
 
-/*Circular BUFFER*/
-static volatile uint8_t UART_tx_ring_head;
-static volatile uint8_t UART_tx_ring_tail;
-static volatile char	UART_tx_ring_data[UART_RING_SIZE_TX];
+	uint8_t rx_ring_head;
+	uint8_t rx_ring_tail;
+	char	rx_ring_data[UART_RING_SIZE_RX];
+}UART_buffer_struct;
 
-static volatile uint8_t UART_rx_ring_head;
-static volatile uint8_t UART_rx_ring_tail;
-static volatile char	UART_rx_ring_data[UART_RING_SIZE_RX];
+volatile uint8_t UART0_countDatasReceive=0;
+volatile uint8_t UART1_countDatasReceive=0;
 
-/*Intern Functions*/
+//DEFINES
+#if defined( UART0 )
+#define UART0_A					UCSR0A
+#define UART0_B					UCSR0B
+#define UART0_C					UCSR0C
+#define UART0_DATA				UDR0
+#define UART0_UDRIE				UDRIE0
+#define UART0_U2X0				U2X0
+
+#elif defined( UART1 )
+#define UART1_A					UCSR1A
+#define UART1_B					UCSR1B
+#define UART1_C					UCSR1C
+#define UART1_DATA				UDR1
+#define UART1_UDRIE				UDRIE1
+#define UART1_U2X1				U2X1
+#endif
+
+//BUFFER
+#if defined( UART0 )
+static volatile UART_buffer_struct UART_buffer;
+
+#elif defined( UART1 )
+static volatile UART_buffer_struct UART_buffer;
+#endif
+
+//Intern Functions
 static int UART_tx_ring_add(char c);
 static int UART_rx_ring_remove(void);
 
-/************************************************************************/
-/* PUBLIC FUNCTIONS                                                     */
-/************************************************************************/
+
+	// ********** Functions ********** //
+
 void UART_init(unsigned int baud){
-	
+	#if defined( UART0 )
 	//Asynchronous Transmission | Must be set to 0 if used synchronous
-	USART0_A = 1<<U2X ;
+	UART0_A = 1<<UART0_U2X0 ;
 	
 	//Set baud rate
 	UBRR0 = baud ;
 	
 	//Configuration
-	USART0_B = 1<<RXEN0 | 1<<TXEN0 | 1<<RXCIE0 ;
-	USART0_C = 3<<UCSZ00 ;
+	UART0_B = 1<<RXEN0 | 1<<TXEN0 | 1<<RXCIE0 ;
+	UART0_C = 3<<UCSZ00 ;
 	
 	//Pull_Up
 	PORTD = 1<<PIND0; // Protection to avoid problem to receive datas
+	
+	#elif defined( UART1 )
+	//Asynchronous Transmission | Must be set to 0 if used synchronous
+	UART1_A = 1<<UART1_U2X1 ;
+		
+	//Set baud rate
+	UBRR1 = baud ;
+		
+	//Configuration
+	UART1_B = 1<<RXEN1 | 1<<TXEN1 | 1<<RXCIE1 ;
+	UART1_C = 3<<UCSZ10 ;
+		
+	//Pull_Up
+	PORTD = 1<<PIND2; // Protection to avoid problem to receive datas
+	#endif
 }
 void UART_tx_launch(){
-	USART0_B |= (1 << USART0_UDRIE); 
+	#if defined( UART0 )
+	UART0_B |= (1 << UART0_UDRIE); 
+	#elif defined( UART1 )
+	UART1_B |= (1 << UART1_UDRIE); 
+	#endif
+	
 }
 
-	/**-SEND DATAS-**/
+/****************************************************************************
+  Send datas
+****************************************************************************/
 
 void UART_write_char(char data) {
 	// Add the data to the ring buffer now that there's room
@@ -80,14 +126,16 @@ void UART_txFromPROGMEM ( const char *data)
 	while ( pgm_read_byte (data) != 0x00)
 	UART_write_char(pgm_read_byte (data ++));
 }
-void UART_put8int( uint8_t i )
+void UART_put8int( uint8_t number )
 {
-	UART_write_char('0'+((i / 100) % 10));
-	UART_write_char('0'+((i / 10) % 10));
-	UART_write_char('0'+(i % 10));
+	UART_write_char('0'+((number / 100) % 10));
+	UART_write_char('0'+((number / 10) % 10));
+	UART_write_char('0'+(number % 10));
 }
 		
-		/**-GET DATAS-**/
+/****************************************************************************
+  Get datas
+****************************************************************************/
 		
 char UART_read_char(void) {
 	// Then return the character
@@ -104,16 +152,16 @@ char* UART_read_buffer(void){
 	return tampon;
 }
 
-/************************************************************************/
-/* Intern Functions                                                     */
-/************************************************************************/
+/****************************************************************************
+  Intern Functions
+****************************************************************************/
 
 static int UART_tx_ring_add(char c){
 	int8_t statut=0;
 	
-	if (UART_tx_ring_head + 1 != UART_tx_ring_tail) {
+	if (UART_buffer.tx_ring_head + 1 != UART_buffer.tx_ring_tail) {
 		/* there is room */
-		UART_tx_ring_data[UART_tx_ring_head++] = c;
+		UART_buffer.tx_ring_data[UART_buffer.tx_ring_head++] = c;
 	}else {
 		/* no room left in the buffer */
 		statut=-1;
@@ -124,12 +172,12 @@ static int UART_tx_ring_add(char c){
 static int UART_rx_ring_remove(void){
 	uint8_t c= 0x00;
 	
-	if (UART_rx_ring_head != UART_rx_ring_tail) {
-		c = UART_rx_ring_data[UART_rx_ring_tail];	//load the current char from buffer
-		UART_rx_ring_data[UART_rx_ring_tail++]=0x00; //reset char after reading
+	if (UART_buffer.rx_ring_head != UART_buffer.rx_ring_tail) {
+		c = UART_buffer.rx_ring_data[UART_buffer.rx_ring_tail];	//load the current char from buffer
+		UART_buffer.rx_ring_data[UART_buffer.rx_ring_tail++]=0x00; //reset char after reading
 	}else {	
-		UART_rx_ring_tail=0;		
-		UART_rx_ring_head=0;
+		UART_buffer.rx_ring_tail=0;		
+		UART_buffer.rx_ring_head=0;
 		UART_datasReceived=0;	//datas received and read ! -> reset
 	}
 	
@@ -139,30 +187,62 @@ static int UART_rx_ring_remove(void){
 /************************************************************************/
 /* Interruptions                                                        */
 /************************************************************************/
-
+	/**--UART0--**/
+#if defined( UART0 )
 ISR(USART0_RX_vect) {
 	//Check if there is room left in buffer if not got back to position 0
-	if(UART_rx_ring_head == UART_RING_SIZE_RX){
-		UART_rx_ring_head = 0;					//Reset value of sender 
+	if(UART_buffer.rx_ring_head == UART_RING_SIZE_RX){
+		UART_buffer.rx_ring_head = 0;					//Reset value of sender 
 	}
-	char data=USART0_DATA;
+	UART0_countDatasReceive++;
+	char data=UART0_DATA;
 	
-	UART_rx_ring_data[UART_rx_ring_head++]=data;
-	if(data==UART_ENDCHAR) UART_datasReceived=1;
+	UART_buffer.rx_ring_data[UART_buffer.rx_ring_head++]=data;
+	if(data==UART0_ENDCHAR|| UART0_countDatasReceive==UART0_ENDSIZE ) UART_datasReceived=1;
 	
 }
 
 ISR(USART0_UDRE_vect) {
 	
 	//The pointer has arrived at the end of message we want to transmit
-	uint8_t tx_data = UART_tx_ring_data[UART_tx_ring_tail]; //Get the data from tx_buffer
-	if(UART_tx_ring_head != UART_tx_ring_tail ){ //while head != tail
-		UART_tx_ring_data[UART_tx_ring_tail++]=0x00; //reset the data
-		USART0_DATA = tx_data ;
+	uint8_t tx_data = UART_buffer.tx_ring_data[UART_buffer.tx_ring_tail]; //Get the data from tx_buffer
+	if(UART_buffer.tx_ring_head != UART_buffer.tx_ring_tail ){ //while head != tail
+		UART_buffer.tx_ring_data[UART_buffer.tx_ring_tail++]=0x00; //reset the data
+		UART0_DATA = tx_data ;
 	}
 	else{
-		USART0_B &= ~(1 << USART0_UDRIE);
-		UART_tx_ring_tail=0;
-		UART_tx_ring_head=0;
+		UART0_B &= ~(1 << UART0_UDRIE);
+		UART_buffer.tx_ring_tail=0;
+		UART_buffer.tx_ring_head=0;
 	}
 }
+	/**--UART1--**/
+#elif defined( UART1 )
+ISR(USART1_RX_vect) {
+	//Check if there is room left in buffer if not got back to position 0
+	if(UART_buffer.rx_ring_head == UART_RING_SIZE_RX){
+		UART_buffer.rx_ring_head = 0;					//Reset value of sender
+	}
+	UART0_countDatasReceive++;
+	char data=UART1_DATA;
+	
+	UART_buffer.rx_ring_data[UART_buffer.rx_ring_head++]=data;
+	if(data==UART1_ENDCHAR || UART0_countDatasReceive==UART1_ENDSIZE) UART_datasReceived=1;
+	
+}
+
+ISR(USART1_UDRE_vect) {
+	
+	//The pointer has arrived at the end of message we want to transmit
+	uint8_t tx_data = UART_buffer.tx_ring_data[UART_buffer.tx_ring_tail]; //Get the data from tx_buffer
+	if(UART_buffer.tx_ring_head != UART_buffer.tx_ring_tail ){ //while head != tail
+		UART_buffer.tx_ring_data[UART_buffer.tx_ring_tail++]=0x00; //reset the data
+		UART1_DATA = tx_data ;
+	}
+	else{
+		UART1_B &= ~(1 << UART1_UDRIE);
+		UART_buffer.tx_ring_tail=0;
+		UART_buffer.tx_ring_head=0;
+	}
+}
+#endif
