@@ -14,21 +14,22 @@
 
 int main(void)
 {
-	AFMS_init();
+	//AFMS_init();
 	UART_init(UART_BAUD_SELECT(9600,1000000UL));
 
 	sei();
 	
+	UART_tx("Hello#");
+	UART_tx_launch();
 	
-	
-    while(1)
-    {
+    while(1){
 
 		if(UART_datasReceived==1){ //Datas have been received from UART
 			UART_datasReceived=0;
 			char* tampon=UART_read_buffer();
-			
-			switch (tampon[0]){
+			UART_tx(tampon);
+			UART_tx_launch();
+			/*switch (tampon[0]){
 			case 'U':
 				AFMS_DCMotor_setSpeed(M1,150);
 				AFMS_DCMotor_run(M1,FORWARD);
@@ -73,7 +74,7 @@ int main(void)
 				UART_tx("STOP !");
 				break;
 			}		
-			UART_tx_launch();
+			UART_tx_launch();*/
 		}
     }
 }
