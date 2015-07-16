@@ -160,16 +160,26 @@
      <property name="title">
       <string>Additional options</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QCheckBox" name="localEchoCheckBox">
+       <widget class="QPushButton" name="testConnection">
         <property name="text">
-         <string>Local echo</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>Test Connection</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

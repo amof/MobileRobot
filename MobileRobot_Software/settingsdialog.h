@@ -45,6 +45,8 @@
 
 #include <QDialog>
 #include <QtSerialPort/QSerialPort>
+#include <QDataStream>
+#include <QByteArray>
 
 QT_USE_NAMESPACE
 
@@ -87,6 +89,7 @@ private slots:
     void showPortInfo(int idx);
     void apply();
     void checkCustomBaudRatePolicy(int idx);
+    void testConnection();
 
 private:
     void fillPortsParameters();
@@ -97,6 +100,7 @@ private:
     Ui::SettingsDialog *ui;
     Settings currentSettings;
     QIntValidator *intValidator;
+
 };
 
 #endif // SETTINGSDIALOG_H

@@ -65,6 +65,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
             this, SLOT(showPortInfo(int)));
     connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(checkCustomBaudRatePolicy(int)));
+    connect(ui->testConnection, SIGNAL(clicked()),
+            this, SLOT(testConnection()));
 
     fillPortsParameters();
     fillPortsInfo();
@@ -196,4 +198,21 @@ void SettingsDialog::updateSettings()
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
     currentSettings.localEchoEnabled = ui->localEchoCheckBox->isChecked();
+}
+
+void SettingsDialog::testConnection(){
+
+    QSerialPort *bluetooth;
+    bluetooth->setPortName(currentSettings.name);
+    bluetooth->setBaudRate(currentSettings.baudRate);
+    bluetooth->setDataBits(currentSettings.dataBits);
+    bluetooth->setParity(currentSettings.parity);
+    bluetooth->setStopBits(currentSettings.stopBits);
+    bluetooth->setFlowControl(currentSettings.flowControl);
+
+    bluetooth->setFlowControl(currentSettings.flowControl);
+
+    if (bluetooth->open(QIODevice::ReadWrite)) {
+
+    }
 }
