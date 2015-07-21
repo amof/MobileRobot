@@ -78,7 +78,10 @@ void UART_init(unsigned int baud){
 	UART0_C = 3<<UCSZ00 ;
 	
 	//Pull_Up
-	PORTD = 1<<PIND0; // Protection to avoid problem to receive datas
+		#if defined(UART0_RX_PULL_UP)
+		DDRD &= ~(1<<PIND0);
+		PORTD |= 1<<PIND0; // Protection to avoid problem to receive datas
+		#endif
 	
 	#elif defined( UART1 )
 	//Asynchronous Transmission | Must be set to 0 if used synchronous
@@ -92,7 +95,10 @@ void UART_init(unsigned int baud){
 	UART1_C = 3<<UCSZ10 ;
 		
 	//Pull_Up
-	PORTD = 1<<PIND2; // Protection to avoid problem to receive datas
+		#if defined(UART1_RX_PULL_UP)
+		DDRD &= ~(1<<PIND2);
+		PORTD = 1<<PIND2; // Protection to avoid problem to receive datas
+		#endif
 	#endif
 }
 void UART_tx_launch(){

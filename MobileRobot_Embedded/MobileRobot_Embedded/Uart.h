@@ -7,7 +7,8 @@
  *  License: GNU General Public License V3
  *	Version : 1.1b1
  *	Warning : This version doesn't handle UART0 & UART1 at the same time
- *	!!! Problem to fix : buffer on reception  !!!
+ *	!!! 1. [IN PROGRESS] buffer on reception TESTED in simu -> due to add pull-up? !!!
+ *	!!! 2. [FAILED] Test on ATMEGA88P !!!
  * 
  */ 
 
@@ -32,11 +33,13 @@ volatile uint8_t UART_datasReceived; //Automatically reset to zero when all the 
 //Define the length or a character after which the flag UART0_datasReceived is set to '1'
 #define UART0_ENDCHAR		0x23	//Termination's Character : '#'
 #define UART0_ENDSIZE		20		//Length : maximum 255
+#define UART0_RX_PULL_UP			//Pull-up to avoid problem or create the problems ?
 
 	/**--UART1--**/
 //Define the length or a character after which the flag UART1_datasReceived is set to '1'
 #define UART1_ENDCHAR		0x23	//Termination's Character : '#'
 #define UART1_ENDSIZE		20		//Length : maximum 255
+#define UART1_RX_PULL_UP			
 
 /****************************************************************************
   Functions
