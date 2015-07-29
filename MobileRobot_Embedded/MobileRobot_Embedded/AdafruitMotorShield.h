@@ -15,8 +15,6 @@
 #ifndef ADAFRUITMOTORSHIELD_H_
 #define ADAFRUITMOTORSHIELD_H_
 
-#define F_CPU 1000000UL //Please adjust to your speed to get a correct configuration
-
 /****************************************************************************
   Public definitions
 ****************************************************************************/
