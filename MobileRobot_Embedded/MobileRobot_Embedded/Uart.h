@@ -8,7 +8,7 @@
  *	Version : 1.1b1
  *	Warning : This version doesn't handle UART0 & UART1 at the same time
  *	!!! 1. [IN PROGRESS] buffer on reception TESTED in simu -> due to add pull-up? !!!
- *	!!! 2. [FAILED] Test on ATMEGA88P !!!
+ *	!!! 2. [FAILED] Test on ATMEGA88P !!! -> Bad name of IV : without '0' for the 88 family ?
  * 
  */ 
 
