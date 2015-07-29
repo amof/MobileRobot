@@ -1,37 +1,21 @@
 /*
- * AdafruitMotorShield.h
+ * This library can handle the Adafruit Motor Shield v2 by I2C
+ * **REQUIRED: I2C library
  *
- * Created: 23/06/2015 08:57:59
  *  Author: amof
- * This library handle only DC Motors
+ *  Specifically develop for ATMEGA-8bits family
+ *  Based on the work of Adafruit
+ *  License: GNU General Public License V3
+ *	Version : 1.0
+ * 
  */ 
+ 
 
 
 #ifndef ADAFRUITMOTORSHIELD_H_
 #define ADAFRUITMOTORSHIELD_H_
 
-/****************************************************************************
-  I2C adresses used by PCA9685
-****************************************************************************/
-
-#define AdafruitMotorShield	0x60
-
-#define PCA9685_SUBADR1 0x2
-#define PCA9685_SUBADR2 0x3
-#define PCA9685_SUBADR3 0x4
-
-#define PCA9685_MODE1 0x0
-#define PCA9685_PRESCALE 0xFE
-
-#define LED0_ON_L 0x6
-#define LED0_ON_H 0x7
-#define LED0_OFF_L 0x8
-#define LED0_OFF_H 0x9
-
-#define ALLLED_ON_L 0xFA
-#define ALLLED_ON_H 0xFB
-#define ALLLED_OFF_L 0xFC
-#define ALLLED_OFF_H 0xFD
+#define F_CPU 1000000UL //Please adjust to your speed to get a correct configuration
 
 /****************************************************************************
   Public definitions

@@ -1,11 +1,14 @@
 /*
- * AdafruitMotorShield.c
+ * This library can handle the Adafruit Motor Shield v2 by I2C
+ * DO NOT MODIFY THIS FILE for configuration purpose.
  *
- * Created: 23/06/2015 08:57:29
  *  Author: amof
+ *  Specifically developp for Atmega-8bits family
+ *  Based on the work of Adafruit
+ *  License: GNU General Public License V3
+ *	Version : 1
+ * 
  */ 
-
-#define F_CPU 1000000UL
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -13,6 +16,29 @@
 #include <stdlib.h>
 #include "AdafruitMotorShield.h"
 #include "I2C_Master.h"
+
+/****************************************************************************
+  I2C adresses used by PCA9685
+****************************************************************************/
+
+#define AdafruitMotorShield	0x60
+
+#define PCA9685_SUBADR1 0x2
+#define PCA9685_SUBADR2 0x3
+#define PCA9685_SUBADR3 0x4
+
+#define PCA9685_MODE1 0x0
+#define PCA9685_PRESCALE 0xFE
+
+#define LED0_ON_L 0x6
+#define LED0_ON_H 0x7
+#define LED0_OFF_L 0x8
+#define LED0_OFF_H 0x9
+
+#define ALLLED_ON_L 0xFA
+#define ALLLED_ON_H 0xFB
+#define ALLLED_OFF_L 0xFC
+#define ALLLED_OFF_H 0xFD
 
 /****************************************************************************
   Private definitions
@@ -98,7 +124,7 @@ void AFMS_setPIN(uint8_t pin, uint8_t value){
 
 void AFMS_init( void ){
 	
-	sei();
+	sei(); //permit to activate the initial configuration because the interruption are not activated
 	
 	TWI_Master_init(TWI_FREQ_SELECT(10000,1000000UL)); //initialize TWI interface in master mode
 	
@@ -108,7 +134,7 @@ void AFMS_init( void ){
 	
 	for (uint8_t i=0; i<16; i++) setPWM(i, 0, 0);
 	
-	cli();
+	cli(); //desactivate the interruption to continue others initialisations 
 	
 }
 
