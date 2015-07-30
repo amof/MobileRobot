@@ -4,6 +4,8 @@ Here is the detail of the framing process used in this application.
 
 **Warning :** The AVR in the mobile robot will not use regular expression <regexp> library because RAM space is limited.
 
+**Warning 2 :** The command code must not be used in the data field.
+
 |Header     |Frame Number	|Number of Data(s) byte(s)	|Command      |Data          |CRC      |Footer      |
 |:---------:|:-------------:|:-------------------------:|:-----------:|:------------:|:-------:|:----------:|
 |1 byte     | 3 bytes		| 2 bytes					| 1 byte      |Up to 99 bytes| 1 byte  | 1 byte     |
@@ -11,9 +13,9 @@ Here is the detail of the framing process used in this application.
 ####1. Header
 The header is composed by a unique code : **0x10**
 ####2. Frame Number
-The frame is number with a number between 000-999.
+The frame is number with a number between 001-999.
 ####3. Number of Data(s) byte(s)
-Number of bytes of datas in the field Data
+Number of bytes of datas in the field Data : from 00 to 99 (bytes)
 ####4. Command & Data
 All the commands and the data format are listed below: 
 
@@ -24,11 +26,11 @@ All the commands and the data format are listed below:
 |   2   | ?        	| /					| NACK|
 |   3   | ?         | /					| CCS (Control Connection Status)|
 | Manual Mode |
-|   4   | ?         | /					| Manual Mode|
-|   5   | ?         | XY				| Control Robot. XY is *UP*, *DO*wn, *LE*ft, *RI*ght|
+|   4   | ?         | /					| MM : Manual Mode|
+|   5   | ?         | XY				| Control Robot(CR): XY is *UP*, *DO*wn, *LE*ft, *RI*ght|
 | Automatic Mode |
-|   6   | ?         | /					| Automatic Mode|
-|   7   | ?         | XxxxxYyyyy		| Target Coordinate. X is Nord(N) or Sud(S), xxxx is distance in cm ; X is East(E) or West(W), yyyy is distance in cm|
+|   6   | ?         | /					| Automatic Mode(AM)|
+|   7   | ?         | XxxxxYyyyy		| Target Coordinate(TC): X is Nord(N) or Sud(S), xxxx is distance in cm ; Y is East(E) or West(W), yyyy is distance in cm|
 | Information |
 |   8   | ?         |					| DIA (Data information from Acceleromter)|
 |   9   | ?         |					| DIU (Data information from Ultra-sonic module)|
