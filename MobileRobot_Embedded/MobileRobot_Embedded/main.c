@@ -5,28 +5,29 @@
  *  Author: Julien
  */ 
 
+#define F_CPU 1000000UL //!!Please adjust to your speed to get a correct configuration
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "AdafruitMotorShield.h"
-#include "Uart.h"
+#include "NavComs.h"
 
 
 int main(void)
 {
 	//AFMS_init();
-	UART_init(UART_BAUD_SELECT(9600,1000000UL));
+	
 
 	sei();
-	
-	UART_tx("Hello#");
+	UART_tx("Initialize!");
 	UART_tx_launch();
-	
+
     while(1){
 
 		if(UART_datasReceived==1){ //Datas have been received from UART
 			UART_datasReceived=0;
 			char* tampon=UART_read_buffer();
+			UART_tx("R:");
 			UART_tx(tampon);
 			UART_tx_launch();
 			/*switch (tampon[0]){
