@@ -31,7 +31,7 @@ So to have access and launch successfully the software, you must :
 - AdafruitMotorShield (OK)
 - Reliability for transmission and ACK using regular expressions (WIP) 
 
-###V2.0 (09/15 ?)
+###V2.0 (2016 ?)
 - Integration of accelerometer, compass and ultrasonic modules.
 - Localise the robot precisely
 - Obstacle avoidance
