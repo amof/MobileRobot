@@ -1,13 +1,17 @@
-# MobileRobot
+MobileRobot
+============
+
 A personal project based on a 4WD MobileRobot.
 
 ##Goal
-The goal of this project is to develop a remote control car in a first time.
-After, the robot can be autonomous and transmit informations to the PC if there is a bluetooth connection available.
+
+The first goal is to developp a remote control car over Bluetooth.
+
+The second objective is to make the robot autonomous. Then, it will have the ability to transmit informations to the PC if there is a bluetooth connection available.
 
 ## Softwares
-- QT 5.5 (latest version) + QT Creator
-- Atmel Studio 6.1 SP2 (6.1.2730)
+- QT 5.6 (latest version) + QT Creator
+- Atmel Studio 7 with GCC 4.9.2
 
 ## Hardware
 - 4WD Mobile Robot
@@ -25,11 +29,11 @@ So to have access and launch successfully the software, you must :
 - Load the .atsln located in /MobileRobot_Embedded and upload in your µc
 
 ## Development roadmap
-###V1.0 (31/07/15)
-- Application Software on QT(WIP)
-- Bluetooth module (OK)
+###V1.0 (2016)
+- Bluetooth module tests(OK)
 - AdafruitMotorShield (OK)
-- Reliability for transmission and ACK using regular expressions (WIP) 
+- Application Software on QT(WIP)
+- Communication controller(WIP)
 
 ###V2.0 (2016 ?)
 - Integration of accelerometer, compass and ultrasonic modules.
@@ -41,4 +45,3 @@ So to have access and launch successfully the software, you must :
 ## Licence
 This project and all its files are published under GPLv3.
 
-This is true even if there is not yet informations in the .cpp or .h files.
