@@ -6,5 +6,20 @@
         <file>images/disconnect.png</file>
         <file>images/settings.png</file>
         <file>images/robot.jpg</file>
+        <file>images/car.png</file>
+        <file>images/down.png</file>
+        <file>images/down-2.png</file>
+        <file>images/left.png</file>
+        <file>images/left-2.png</file>
+        <file>images/right.png</file>
+        <file>images/right-2.png</file>
+        <file>images/up.png</file>
+        <file>images/up-2.png</file>
+        <file>images/robot_splash.png</file>
+        <file>images/robot_ico.png</file>
+        <file>images/compass.png</file>
+        <file>images/home.png</file>
+        <file>images/move.png</file>
+        <file>images/logout.png</file>
     </qresource>
 </RCC>
