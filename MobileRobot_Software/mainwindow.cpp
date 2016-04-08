@@ -8,9 +8,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     ui->actionClose->setEnabled(false);
 
-    bluetooth= new QSerialPort(this);
     settings = new SettingsDialog;
     timer = new QTimer(this);
+    controller = new Controller();
+    config.parseConfig();
+    plotExample();
+    ui->view->setCurrentIndex(0);
+    ui->label_home_2->setText("Version: "+config.version);
 
     initActionsConnections();
 }
@@ -24,63 +28,41 @@ MainWindow::~MainWindow()
 
 void MainWindow::openSerialPort()
 {
-    if(bluetooth->isOpen())bluetooth->close();;
 
     SettingsDialog::Settings p = settings->settings();
 
-    bluetooth->setPortName(p.name);
-    bluetooth->setBaudRate(p.baudRate);
-    bluetooth->setDataBits(p.dataBits);
-    bluetooth->setParity(p.parity);
-    bluetooth->setStopBits(p.stopBits);
-    bluetooth->setFlowControl(p.flowControl);
+    controller->controller_configure(p);
 
-    bluetooth->setFlowControl(p.flowControl);
-
-    if (bluetooth->open(QIODevice::ReadWrite)) {
+    if (controller->controller_open()==TRUE) {
             ui->actionOpen->setEnabled(false);
             ui->actionClose->setEnabled(true);
             ui->actionConfiguration->setEnabled(false);
-            ui->statusBar->showMessage(tr("Connected to Bluetooth (%1) in Read/Write Mode")
-                                       .arg(p.name));
+            ui->statusBar->showMessage(tr("Connected to Bluetooth (%1) in Read/Write Mode").arg(p.name));
     } else {
-        QMessageBox::critical(this, tr("Error"), bluetooth->errorString());
         ui->statusBar->showMessage(tr("Error while trying to open"));
     }
 }
 
 void MainWindow::closeSerialPort()
 {
-    bluetooth->close();
+    controller->controller_close();
     ui->actionOpen->setEnabled(true);
     ui->actionClose->setEnabled(false);
     ui->actionConfiguration->setEnabled(true);
     ui->statusBar->showMessage(tr("Disconnected"));
 }
-void MainWindow::writeData(const QByteArray &data)
-{
-    if(bluetooth->isOpen()){
-        bluetooth->write(data);
-    }
 
+void MainWindow::readController(){
+    controller->read();
 }
-void MainWindow::readData()
-{
-    if(bluetooth->isOpen()){
-        QByteArray data = bluetooth->readAll();
-        if(!data.isEmpty())
-        ui->bluetooth_in_console->append(data);
-    }
 
-
-}
-void MainWindow::handleError(QSerialPort::SerialPortError error)
+/*void MainWindow::handleError(QSerialPort::SerialPortError error)
 {
     if (error == QSerialPort::ResourceError) {
         QMessageBox::critical(this, tr("Critical Error"), bluetooth->errorString());
         closeSerialPort();
     }
-}
+}*/
 
     /** KEYS */
 
@@ -88,28 +70,59 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     switch( event->key()){
         case Qt::Key_8:
-            bluetooth->write("U#");
+            ui->direction_up->setPixmap(QPixmap(":/images/up-2.png"));
+            QMessageLogger("MainWindow",25,"keyPressEvent").debug("Key up pressed");
             break;
         case Qt::Key_2:
-            bluetooth->write("D#");
+            ui->direction_down->setPixmap(QPixmap(":/images/down-2.png"));
             break;
         case Qt::Key_4:
-            bluetooth->write("L#");
+            ui->direction_left->setPixmap(QPixmap(":/images/left-2.png"));
             break;
         case Qt::Key_6:
-            bluetooth->write("R#");
+            ui->direction_right->setPixmap(QPixmap(":/images/right-2.png"));
             break;
         case Qt::Key_S:
-            bluetooth->write("S#");
             break;
         }
 
 }
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    if (!(event->isAutoRepeat()))
-    bluetooth->write("S#");
+    ui->direction_down->setPixmap(QPixmap(":/images/down.png"));
+    ui->direction_up->setPixmap(QPixmap(":/images/up.png"));
+    ui->direction_left->setPixmap(QPixmap(":/images/left.png"));
+    ui->direction_right->setPixmap(QPixmap(":/images/right.png"));
+}
 
+void MainWindow::plotExample(){
+    // generate some data:
+    QVector<double> x(101), y(101); // initialize with entries 0..100
+    for (int i=0; i<101; ++i)
+    {
+      x[i] = i/50.0 - 1; // x goes from -1 to 1
+      y[i] = x[i]*x[i]; // let's plot a quadratic function
+    }
+    // create graph and assign data to it:
+    ui->plotAccelerometer->addGraph();
+    ui->plotAccelerometer->graph(0)->setData(x, y);
+    // give the axes some labels:
+    ui->plotAccelerometer->xAxis->setLabel("x");
+    ui->plotAccelerometer->yAxis->setLabel("y");
+    // set axes ranges, so we see all data:
+    ui->plotAccelerometer->xAxis->setRange(-1, 1);
+    ui->plotAccelerometer->yAxis->setRange(0, 1);
+    ui->plotAccelerometer->replot();
+}
+
+void MainWindow::view_home(){
+    ui->view->setCurrentIndex(0);
+}
+void MainWindow::view_command(){
+    ui->view->setCurrentIndex(1);
+}
+void MainWindow::view_sensors(){
+    ui->view->setCurrentIndex(2);
 }
 
 
@@ -118,9 +131,10 @@ void MainWindow::initActionsConnections()
 {
     connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openSerialPort()));
     connect(ui->actionClose, SIGNAL(triggered()), this, SLOT(closeSerialPort()));
-    connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->actionConfiguration, SIGNAL(triggered()), settings, SLOT(show()));
 
-    connect(timer, SIGNAL(timeout()), this, SLOT(readData()));
-    timer->start(200);
+    connect(ui->btn_home, SIGNAL(clicked()), this, SLOT(view_home()));
+    connect(ui->btn_cmd, SIGNAL(clicked()), this, SLOT(view_command()));
+    connect(ui->btn_sensor, SIGNAL(clicked()), this, SLOT(view_sensors()));
+
 }
