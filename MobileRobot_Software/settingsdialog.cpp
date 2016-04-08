@@ -1,51 +1,10 @@
-/****************************************************************************
-**
-** Copyright (C) 2012 Denis Shienkov <denis.shienkov@gmail.com>
-** Copyright (C) 2012 Laszlo Papp <lpapp@kde.org>
-** Contact: http://www.qt-project.org/legal
-**
-** This file is part of the QtSerialPort module of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:LGPL$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and Digia.  For licensing terms and
-** conditions see http://qt.digia.com/licensing.  For further information
-** use the contact form at http://qt.digia.com/contact-us.
-**
-** GNU Lesser General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU Lesser
-** General Public License version 2.1 as published by the Free Software
-** Foundation and appearing in the file LICENSE.LGPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU Lesser General Public License version 2.1 requirements
-** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
-**
-** In addition, as a special exception, Digia gives you certain additional
-** rights.  These rights are described in the Digia Qt LGPL Exception
-** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
-**
-** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU
-** General Public License version 3.0 as published by the Free Software
-** Foundation and appearing in the file LICENSE.GPL included in the
-** packaging of this file.  Please review the following information to
-** ensure the GNU General Public License version 3.0 requirements will be
-** met: http://www.gnu.org/copyleft/gpl.html.
-**
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
-
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 
 #include <QtSerialPort/QSerialPortInfo>
 #include <QIntValidator>
 #include <QLineEdit>
+#include <QDebug>
 
 QT_USE_NAMESPACE
 
@@ -65,12 +24,11 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
             this, SLOT(showPortInfo(int)));
     connect(ui->baudRateBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(checkCustomBaudRatePolicy(int)));
-    connect(ui->testConnection, SIGNAL(clicked()),
-            this, SLOT(testConnection()));
 
     fillPortsParameters();
     fillPortsInfo();
 
+    updateFromConfig();
     updateSettings();
 }
 
@@ -82,6 +40,44 @@ SettingsDialog::~SettingsDialog()
 SettingsDialog::Settings SettingsDialog::settings() const
 {
     return currentSettings;
+}
+
+void SettingsDialog::updateFromConfig(){
+    config.parseConfig();
+
+    int index = ui->baudRateBox->findData(config.bluetooth_baudrate);
+    if ( index != -1 ) { // -1 for not found
+       ui->baudRateBox->setCurrentIndex(index);
+    }else{
+       ui->baudRateBox->setCurrentIndex(4);
+       ui->baudRateBox->setCurrentText(QString::number(config.bluetooth_baudrate));
+
+    }
+    index = ui->dataBitsBox->findData(config.bluetooth_databits);
+    if ( index != -1 ) { // -1 for not found
+       ui->dataBitsBox->setCurrentIndex(index);
+    }
+    index = ui->parityBox->findText(config.bluetooth_parity);
+    if ( index != -1 ) { // -1 for not found
+       ui->parityBox->setCurrentIndex(index);
+    }
+    index = ui->stopBitsBox->findData(config.bluetooth_stopbits);
+    if ( index != -1 ) { // -1 for not found
+       ui->stopBitsBox->setCurrentIndex(index);
+    }
+    index = ui->flowControlBox->findText(config.bluetooth_flowcontrol);
+    if ( index != -1 ) { // -1 for not found
+       ui->flowControlBox->setCurrentIndex(index);
+    }
+}
+
+void SettingsDialog::updateToConfig(){
+    config.bluetooth_baudrate=currentSettings.baudRate;
+    config.bluetooth_databits=currentSettings.dataBits;
+    config.bluetooth_parity=currentSettings.stringParity;
+    config.bluetooth_stopbits=currentSettings.stopBits;
+    config.bluetooth_flowcontrol=currentSettings.stringFlowControl;
+    config.writeConfig();
 }
 
 void SettingsDialog::showPortInfo(int idx)
@@ -197,22 +193,7 @@ void SettingsDialog::updateSettings()
                 ui->flowControlBox->itemData(ui->flowControlBox->currentIndex()).toInt());
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
-    //currentSettings.localEchoEnabled = ui->localEchoCheckBox->isChecked();
+    updateToConfig();
 }
 
-void SettingsDialog::testConnection(){
 
-    QSerialPort *bluetooth;
-    bluetooth->setPortName(currentSettings.name);
-    bluetooth->setBaudRate(currentSettings.baudRate);
-    bluetooth->setDataBits(currentSettings.dataBits);
-    bluetooth->setParity(currentSettings.parity);
-    bluetooth->setStopBits(currentSettings.stopBits);
-    bluetooth->setFlowControl(currentSettings.flowControl);
-
-    bluetooth->setFlowControl(currentSettings.flowControl);
-
-    if (bluetooth->open(QIODevice::ReadWrite)) {
-
-    }
-}
