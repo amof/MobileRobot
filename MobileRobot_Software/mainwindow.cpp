@@ -68,31 +68,42 @@ void MainWindow::readController(){
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    switch( event->key()){
-        case Qt::Key_8:
-            ui->direction_up->setPixmap(QPixmap(":/images/up-2.png"));
-            QMessageLogger("MainWindow",25,"keyPressEvent").debug("Key up pressed");
-            break;
-        case Qt::Key_2:
-            ui->direction_down->setPixmap(QPixmap(":/images/down-2.png"));
-            break;
-        case Qt::Key_4:
-            ui->direction_left->setPixmap(QPixmap(":/images/left-2.png"));
-            break;
-        case Qt::Key_6:
-            ui->direction_right->setPixmap(QPixmap(":/images/right-2.png"));
-            break;
-        case Qt::Key_S:
-            break;
-        }
+    if(ui->view->currentIndex()==1 && !(event->isAutoRepeat())){
+        switch( event->key()){
+            case Qt::Key_8:
+                ui->direction_up->setPixmap(QPixmap(":/images/up-2.png"));
+                QMessageLogger("MainWindow",74,"keyPressEvent").debug("Key up pressed");
+                controller->controller_sendCommand(C_M_FW);
+                break;
+            case Qt::Key_2:
+                ui->direction_down->setPixmap(QPixmap(":/images/down-2.png"));
+                QMessageLogger("MainWindow",79,"keyPressEvent").debug("Key down pressed");
+                controller->controller_sendCommand(C_M_BW);
+                break;
+            case Qt::Key_4:
+                ui->direction_left->setPixmap(QPixmap(":/images/left-2.png"));
+                QMessageLogger("MainWindow",83,"keyPressEvent").debug("Key left pressed");
+                controller->controller_sendCommand(C_M_LEFT);
+                break;
+            case Qt::Key_6:
+                ui->direction_right->setPixmap(QPixmap(":/images/right-2.png"));
+                QMessageLogger("MainWindow",88,"keyPressEvent").debug("Key right pressed");
+                controller->controller_sendCommand(C_M_RIGHT);
+                break;
+            }
+    }
 
 }
 void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    ui->direction_down->setPixmap(QPixmap(":/images/down.png"));
-    ui->direction_up->setPixmap(QPixmap(":/images/up.png"));
-    ui->direction_left->setPixmap(QPixmap(":/images/left.png"));
-    ui->direction_right->setPixmap(QPixmap(":/images/right.png"));
+    if(ui->view->currentIndex()==1&& !(event->isAutoRepeat())){
+        QMessageLogger("MainWindow",97,"keyReleaseEvent").debug("Key released");
+        controller->controller_sendCommand(C_M_STOP);
+        ui->direction_down->setPixmap(QPixmap(":/images/down.png"));
+        ui->direction_up->setPixmap(QPixmap(":/images/up.png"));
+        ui->direction_left->setPixmap(QPixmap(":/images/left.png"));
+        ui->direction_right->setPixmap(QPixmap(":/images/right.png"));
+    }
 }
 
 void MainWindow::plotExample(){

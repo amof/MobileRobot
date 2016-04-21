@@ -31,8 +31,8 @@ int main(int argc, char *argv[])
 
     // Logger
     config.parseConfig();
-    //qInstallMessageHandler(myMessageOutput);
-    //QMessageLogger("main",25,"main").debug("Configuration loaded");
+    qInstallMessageHandler(myMessageOutput);
+    QMessageLogger("main",25,"main").debug("Configuration loaded");
 
     // Style sheet load
     QFile File("mobileRobot.qss");
