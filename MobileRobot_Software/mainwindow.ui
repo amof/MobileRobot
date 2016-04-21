@@ -160,7 +160,7 @@
     <item>
      <widget class="QStackedWidget" name="view">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_3">
        <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -474,7 +474,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
+           <widget class="QLabel" name="img_car">
             <property name="text">
              <string/>
             </property>
