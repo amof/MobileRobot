@@ -3,7 +3,7 @@
 /************************************************************************/
 /* Constants and macros                                                 */
 /************************************************************************/
-#define controller_length_command   7
+#define controller_length_command   6
 #define controller_BUFFER_SIZE      20
 
 //States for the analyze function
@@ -18,8 +18,8 @@
 
 static const int f_STX=0x02;
 static const int f_ETX=0x03;
-static const int f_DLE=0x10;
-static const int f_COMMAND=0x9C;
+static const int f_FLAG=0xAA;
+static const int f_version=0x01;
 
 Controller::Controller()
 {
@@ -83,24 +83,25 @@ void Controller::controller_sendCommand(int command)
 {
     QByteArray framed_data(controller_length_command, 0);
 
-    //1. Append start flag
-    framed_data[0]=f_DLE;
-    framed_data[1]=f_STX;
+    //1. Append start + flag
+    framed_data[0]=f_STX;
+    framed_data[1]=f_FLAG;
+    framed_data[2]=f_FLAG;
 
-    //2. Append command + CRC
-    //Command
-    framed_data[2]=f_COMMAND;
-    framed_data[3]=command;
+    //2. Append version + length
+    framed_data[2]=f_version;
+    framed_data[3]=1;
 
-    //CRC
+    //3. Append command
+    framed_data[4]=command;
 
-    //3. Append end flag
-    framed_data[5]=f_DLE;
-    framed_data[6]=f_ETX;
+    //4. Append end
+    framed_data[5]=f_ETX;
 
     // Send framed_data
     send(framed_data);
-    qDebug()<<"[Controller] Command sent : "<<framed_data;
+    //QMessageLogger("Controller",103,"controller_sendCommand").debug("Command sent("+QString::number(command)+")");
+
 }
 
 quint8 Controller::analyze(char frame[], int length){
@@ -110,7 +111,7 @@ quint8 Controller::analyze(char frame[], int length){
     quint8 message=0;
 
 
-    while(buffer_rx_examine < length){
+   /* while(buffer_rx_examine < length){
 
         switch(state){
             case state_START:
@@ -167,7 +168,7 @@ quint8 Controller::analyze(char frame[], int length){
 
             break;
         }
-    }
+    }*/
 
     return message;
 }
