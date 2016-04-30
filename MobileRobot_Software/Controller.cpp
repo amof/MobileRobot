@@ -3,14 +3,17 @@
 /************************************************************************/
 /* Constants and macros                                                 */
 /************************************************************************/
-#define controller_length_command   6
+#define controller_length_command   7
 #define controller_BUFFER_SIZE      20
 
 //States for the analyze function
 #define state_START			0
-#define state_TYPE			1
-#define state_COMMAND		2
-#define state_END			3
+#define state_FLAG			1
+#define state_VERSION		2
+#define state_LENGTH		3
+#define state_COMMAND       4
+#define state_END           5
+
 
 /************************************************************************/
 /* Global variable                                                      */
@@ -52,9 +55,9 @@ void Controller::send(const QByteArray &data)
 
 quint8 Controller::read()
 {
-    quint8 response=0;
+    quint8 response=255;
     if(bluetooth->isOpen()){
-
+        response=0;
         if(bluetooth->bytesAvailable()>=controller_length_command){
             char buf[controller_BUFFER_SIZE];
             qint16 inBytes;
@@ -89,14 +92,14 @@ void Controller::controller_sendCommand(int command)
     framed_data[2]=f_FLAG;
 
     //2. Append version + length
-    framed_data[2]=f_version;
-    framed_data[3]=1;
+    framed_data[3]=f_version;
+    framed_data[4]=1;
 
     //3. Append command
-    framed_data[4]=command;
+    framed_data[5]=command;
 
     //4. Append end
-    framed_data[5]=f_ETX;
+    framed_data[6]=f_ETX;
 
     // Send framed_data
     send(framed_data);
@@ -111,14 +114,14 @@ quint8 Controller::analyze(char frame[], int length){
     quint8 message=0;
 
 
-   /* while(buffer_rx_examine < length){
+    while(buffer_rx_examine < length){
 
         switch(state){
             case state_START:
             {
-                if(frame[buffer_rx_examine]==f_DLE && frame[buffer_rx_examine+1]==f_STX){ //If there is a valid Start
-                    state=state_TYPE;
-                    buffer_rx_examine+=2;
+                if(frame[buffer_rx_examine]==f_STX){ //If there is a valid Start
+                    state=state_FLAG;
+                    buffer_rx_examine+=1;
                 }
                 else{
                     qDebug()<<"[Controller] state_START sent: Wrong Start";
@@ -126,16 +129,34 @@ quint8 Controller::analyze(char frame[], int length){
                 }
                 break;
             }
-            case state_TYPE:
+            case state_FLAG:
             {
-                quint8 type=frame[buffer_rx_examine++];
-                if(type==f_COMMAND){
-                    state=state_COMMAND;
+                quint8 flag=frame[buffer_rx_examine++];
+                quint8 flag_2=frame[buffer_rx_examine++];
+                if(flag==f_FLAG && flag_2==f_FLAG){
+                    state=state_VERSION;
                 }
                 else{
-                    qDebug()<<"[Controller] state_TYPE: Wrong Type";
+                    qDebug()<<"[Controller] state_FLAG: Wrong Flag";
                 }
                 break;
+            }
+            case state_VERSION:
+            {
+                quint8 version=frame[buffer_rx_examine++];
+                if(version==f_version){
+                    state=state_LENGTH;
+                }
+                else{
+                    qDebug()<<"[Controller] state_VERSION: Wrong version";
+                }
+                break;
+            }
+            case state_LENGTH:
+            {
+                quint8 length=frame[buffer_rx_examine++];
+                state=state_COMMAND;
+
             }
             case state_COMMAND:
             {
@@ -147,7 +168,7 @@ quint8 Controller::analyze(char frame[], int length){
             case state_END:
             {
                 //If there is a valid end
-                if(frame[buffer_rx_examine++]==f_DLE && frame[buffer_rx_examine++]==f_ETX){
+                if(frame[buffer_rx_examine++]==f_ETX){
                     state=state_START;
                     isFrameValid=1;
                 }
@@ -168,7 +189,7 @@ quint8 Controller::analyze(char frame[], int length){
 
             break;
         }
-    }*/
+    }
 
     return message;
 }
