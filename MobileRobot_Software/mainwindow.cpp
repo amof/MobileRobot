@@ -53,16 +53,14 @@ void MainWindow::closeSerialPort()
 }
 
 void MainWindow::readController(){
-    controller->read();
-}
-
-/*void MainWindow::handleError(QSerialPort::SerialPortError error)
-{
-    if (error == QSerialPort::ResourceError) {
-        QMessageBox::critical(this, tr("Critical Error"), bluetooth->errorString());
-        closeSerialPort();
+    quint8 response = controller->read();
+    if(response!=255 && response==0){
+        ui->console->setText("No response from the robot");
     }
-}*/
+    else if(response!=0 && response!=255){
+        ui->console->setText("The robot is still connected");
+    }
+}
 
     /** KEYS */
 
@@ -148,4 +146,6 @@ void MainWindow::initActionsConnections()
     connect(ui->btn_cmd, SIGNAL(clicked()), this, SLOT(view_command()));
     connect(ui->btn_sensor, SIGNAL(clicked()), this, SLOT(view_sensors()));
 
+    connect(timer, SIGNAL(timeout()), this, SLOT(readController()));
+        timer->start(200);
 }
