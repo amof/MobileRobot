@@ -126,7 +126,7 @@ void AFMS_init( void ){
 	
 	sei(); //permit to activate the initial configuration because the interruption are not activated
 	
-	TWI_Master_init(TWI_FREQ_SELECT(10000,1000000UL)); //initialize TWI interface in master mode
+	TWI_Master_init(TWI_FREQ_SELECT(10000,8000000UL)); //initialize TWI interface in master mode
 	
 	reset();
 	
