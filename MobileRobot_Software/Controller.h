@@ -16,11 +16,12 @@ public:
     qint8 controller_open();
     void controller_close();
     void controller_sendCommand(int command);
-    quint8 read();
+    QList<quint8> read();
     void controller_configure(SettingsDialog::Settings settings);
 
     #define C_C_ACK		0x10
     #define C_C_NACK	0x15
+    #define C_C_ALOHA	0x16
     #define C_C_ALIVE   0x17
     #define C_C_END_CON 0x19
     #define C_M_STOP    0x20

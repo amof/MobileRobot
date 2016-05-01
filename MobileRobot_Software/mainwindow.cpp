@@ -1,6 +1,8 @@
 #include "Mainwindow.h"
 #include "ui_Mainwindow.h"
 
+int robotNotAlive=0;
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -38,6 +40,7 @@ void MainWindow::openSerialPort()
             ui->actionClose->setEnabled(true);
             ui->actionConfiguration->setEnabled(false);
             ui->statusBar->showMessage(tr("Connected to Bluetooth (%1) in Read/Write Mode").arg(p.name));
+            timer->start(100);
     } else {
         ui->statusBar->showMessage(tr("Error while trying to open"));
     }
@@ -50,15 +53,30 @@ void MainWindow::closeSerialPort()
     ui->actionClose->setEnabled(false);
     ui->actionConfiguration->setEnabled(true);
     ui->statusBar->showMessage(tr("Disconnected"));
+    ui->console->setText("Robot disconnected");
+    timer->stop();
 }
 
 void MainWindow::readController(){
-    quint8 response = controller->read();
-    if(response!=255 && response==0){
-        ui->console->setText("No response from the robot");
+    qDebug()<<"here";
+    QList<quint8> response = controller->read();
+    if(response[0]!=255 && response[0]==0){
+        ui->console->setText("No response from the robot -> Disconnecting ...");
+        robotNotAlive++;
+        if(robotNotAlive==5){
+            robotNotAlive=0;
+            closeSerialPort();
+        }
     }
-    else if(response!=0 && response!=255){
+    else if(response[0]!=0 && response[0]!=255){
         ui->console->setText("The robot is still connected");
+        robotNotAlive=0;
+        for(int i=0;i<response.length();i++){
+            if(response[i]==C_C_ALIVE){
+                controller->controller_sendCommand(C_C_ALIVE);
+                break;
+            }
+        }
     }
 }
 
@@ -147,5 +165,4 @@ void MainWindow::initActionsConnections()
     connect(ui->btn_sensor, SIGNAL(clicked()), this, SLOT(view_sensors()));
 
     connect(timer, SIGNAL(timeout()), this, SLOT(readController()));
-        timer->start(200);
 }

@@ -36,13 +36,17 @@ qint8 Controller::controller_open(){
     if(bluetooth->isOpen())bluetooth->close();
     if (bluetooth->open(QIODevice::ReadWrite)) {
         status=TRUE;
+        controller_sendCommand(C_C_ALOHA);
     }
 
     return status;
 
 }
 void Controller::controller_close(){
-    if(bluetooth->isOpen())bluetooth->close();
+    if(bluetooth->isOpen()){
+        controller_sendCommand(C_C_END_CON);
+        bluetooth->close();
+    }
 }
 
 void Controller::send(const QByteArray &data)
@@ -53,19 +57,31 @@ void Controller::send(const QByteArray &data)
 
 }
 
-quint8 Controller::read()
+QList<quint8> Controller::read()
 {
-    quint8 response=255;
-    if(bluetooth->isOpen()){
-        response=0;
-        if(bluetooth->bytesAvailable()>=controller_length_command){
-            char buf[controller_BUFFER_SIZE];
-            qint16 inBytes;
+    QList<quint8> response;
+    int position=0;
+    while(1){
 
-            inBytes = bluetooth->read(buf, controller_BUFFER_SIZE);
+        response.append(255);
+        if(bluetooth->isOpen()){
+            response[position]=0;
+            if(bluetooth->bytesAvailable()>=controller_length_command){
+                char buf[controller_BUFFER_SIZE];
+                qint16 inBytes;
 
-            qDebug()<<"[Controller] Launching analyze ...";
-            response=analyze(buf, inBytes);
+                inBytes = bluetooth->read(buf, controller_length_command);
+
+                qDebug()<<"[Controller] Launching analyze ...";
+                response[position]=analyze(buf, inBytes);
+                position++;
+            }
+            else{
+                break;
+            }
+        }
+        else{
+            break;
         }
     }
     return response;
