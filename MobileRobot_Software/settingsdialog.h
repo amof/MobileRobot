@@ -100,7 +100,6 @@ private:
     Ui::SettingsDialog *ui;
     Settings currentSettings;
     QIntValidator *intValidator;
-    ParserConfig config;
 
 
 };

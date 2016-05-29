@@ -8,8 +8,6 @@ CustomLogger::CustomLogger()
 
 }
 
-
-
 void CustomLogger::myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString msg)
 {
     QString timestr;

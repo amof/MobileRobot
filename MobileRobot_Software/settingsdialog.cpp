@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QDebug>
 
+
 QT_USE_NAMESPACE
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
@@ -43,41 +44,41 @@ SettingsDialog::Settings SettingsDialog::settings() const
 }
 
 void SettingsDialog::updateFromConfig(){
-    config.parseConfig();
-
-    int index = ui->baudRateBox->findData(config.bluetooth_baudrate);
+    ParserConfigInstance.parseConfig();
+    qDebug() << "Object ParserConfigInstance"<<&ParserConfigInstance;
+    int index = ui->baudRateBox->findData(ParserConfigInstance.bluetooth_baudrate);
     if ( index != -1 ) { // -1 for not found
        ui->baudRateBox->setCurrentIndex(index);
     }else{
        ui->baudRateBox->setCurrentIndex(4);
-       ui->baudRateBox->setCurrentText(QString::number(config.bluetooth_baudrate));
+       ui->baudRateBox->setCurrentText(QString::number(ParserConfigInstance.bluetooth_baudrate));
 
     }
-    index = ui->dataBitsBox->findData(config.bluetooth_databits);
+    index = ui->dataBitsBox->findData(ParserConfigInstance.bluetooth_databits);
     if ( index != -1 ) { // -1 for not found
        ui->dataBitsBox->setCurrentIndex(index);
     }
-    index = ui->parityBox->findText(config.bluetooth_parity);
+    index = ui->parityBox->findText(ParserConfigInstance.bluetooth_parity);
     if ( index != -1 ) { // -1 for not found
        ui->parityBox->setCurrentIndex(index);
     }
-    index = ui->stopBitsBox->findData(config.bluetooth_stopbits);
+    index = ui->stopBitsBox->findData(ParserConfigInstance.bluetooth_stopbits);
     if ( index != -1 ) { // -1 for not found
        ui->stopBitsBox->setCurrentIndex(index);
     }
-    index = ui->flowControlBox->findText(config.bluetooth_flowcontrol);
+    index = ui->flowControlBox->findText(ParserConfigInstance.bluetooth_flowcontrol);
     if ( index != -1 ) { // -1 for not found
        ui->flowControlBox->setCurrentIndex(index);
     }
 }
 
 void SettingsDialog::updateToConfig(){
-    config.bluetooth_baudrate=currentSettings.baudRate;
-    config.bluetooth_databits=currentSettings.dataBits;
-    config.bluetooth_parity=currentSettings.stringParity;
-    config.bluetooth_stopbits=currentSettings.stopBits;
-    config.bluetooth_flowcontrol=currentSettings.stringFlowControl;
-    config.writeConfig();
+    ParserConfigInstance.bluetooth_baudrate=currentSettings.baudRate;
+    ParserConfigInstance.bluetooth_databits=currentSettings.dataBits;
+    ParserConfigInstance.bluetooth_parity=currentSettings.stringParity;
+    ParserConfigInstance.bluetooth_stopbits=currentSettings.stopBits;
+    ParserConfigInstance.bluetooth_flowcontrol=currentSettings.stringFlowControl;
+    ParserConfigInstance.writeConfig();
 }
 
 void SettingsDialog::showPortInfo(int idx)

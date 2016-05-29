@@ -11,7 +11,6 @@
 #include <QtCore/QtMessageHandler>
 
 CustomLogger logTest;
-ParserConfig config;
 
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -30,9 +29,10 @@ int main(int argc, char *argv[])
     a.processEvents();
 
     // Logger
-    config.parseConfig();
+    ParserConfigInstance.parseConfig();
     qInstallMessageHandler(myMessageOutput);
-    QMessageLogger("main",25,"main").debug("Configuration loaded");
+    //QMessageLogger("main",25,"main").debug("Configuration loaded");
+    qDebug()<< "Configuration loaded. ParserConfigInstance"<<&ParserConfigInstance;
 
     // Style sheet load
     QFile File("mobileRobot.qss");
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 
     //Launch window
     MainWindow w;
-    w.setWindowTitle("Mobile Robot by @mof v"+config.version);
+    w.setWindowTitle("Mobile Robot by @mof v"+ParserConfigInstance.version);
     w.show();
     splash.finish(&w);
 

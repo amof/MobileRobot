@@ -2,11 +2,13 @@
 #define PARSERCONFIG_H
 
 #include <QString>
+#include "singleton.h"
+#include <QObject>
 
-class ParserConfig
+class ParserConfig  : public QObject
 {
 public:
-    ParserConfig();
+    ParserConfig(QObject* parent = 0);
     void parseConfig();
     void writeConfig();
     QString version;
@@ -17,5 +19,7 @@ public:
     QString bluetooth_flowcontrol;
 
 };
+
+#define ParserConfigInstance Singleton<ParserConfig>::instance()
 
 #endif // PARSERCONFIG_H

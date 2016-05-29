@@ -26,7 +26,9 @@ HEADERS  += mainwindow.h \
     Controller.h \
     qcustomplot.h \
     CustomLogger.h \
-    ParserConfig.h
+    ParserConfig.h \
+    call_once.h \
+    singleton.h
 
 FORMS    += mainwindow.ui \
     settingsdialog.ui

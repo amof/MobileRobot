@@ -4,7 +4,7 @@
 #include <QFile>
 #include <QDebug>
 
-ParserConfig::ParserConfig()
+ParserConfig::ParserConfig(QObject* parent): QObject(parent)
 {
 
 }

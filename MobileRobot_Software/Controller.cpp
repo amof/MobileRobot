@@ -201,9 +201,11 @@ quint8 Controller::analyze(char frame[], int length){
         }
         //Frame was valid -> GO OUT
         if(isFrameValid==1){
-            qDebug()<<"[Controller] FOUND Message : "<<message;
-
+            //qDebug()<<"[Controller] FOUND Message : "<<message;
             break;
+        }
+        else{
+            message=0;
         }
     }
 
